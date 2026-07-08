@@ -49,12 +49,23 @@ public class FormularioVenta extends JInternalFrame{
         if (confirmacion != JOptionPane.YES_OPTION) return;
 
         try {
-            String dni = txtDni.getText();
-            int idFunc = Integer.parseInt(txtIdFuncion.getText());
-            char fila = txtFila.getText().toUpperCase().charAt(0);
-            int numero = Integer.parseInt(txtNumero.getText());
+            String dni = txtDni.getText().trim();
+
+            if (dni.isEmpty() || txtIdFuncion.getText().isEmpty() || txtFila.getText().isEmpty() || txtNumero.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Campos Vacíos", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            int idFunc = Integer.parseInt(txtIdFuncion.getText().trim());
+            char fila = txtFila.getText().toUpperCase().trim().charAt(0);
+            int numero = Integer.parseInt(txtNumero.getText().trim());
 
             FestivalSistemasService servicio = FestivalSistemasService.getInstancia();
+
+            if (servicio.buscarEspectador(dni) == null) {
+                servicio.registrarEspectador("Cliente Anonimo", "Mostrador", dni);
+            }
+
             int idEntradaGen = (int) (Math.random() * 50000);
 
             Entrada ticket = servicio.venderEntrada(idEntradaGen, idFunc, fila, numero, dni, 1500.0);
@@ -69,13 +80,15 @@ public class FormularioVenta extends JInternalFrame{
                 JOptionPane.showMessageDialog(this, comprobante, "Venta Exitosa", JOptionPane.INFORMATION_MESSAGE);
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Error: Verifique la existencia del Espectador o de la Función.", "Venta Fallida", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error: No se encontró la Función ID " + idFunc + " en el sistema.", "Venta Fallida", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Campos numéricos incorrectos o incompletos.", "Error de Formulario", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Campos numéricos (ID Función / Número de Asiento) incorrectos.", "Error de Formulario", JOptionPane.WARNING_MESSAGE);
         } catch (ButacaOcupadaException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Localidad No Disponible", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.toString(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

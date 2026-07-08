@@ -1,8 +1,9 @@
 package Modelo;
 
-import java.io.PipedReader;
+import Excepciones.ButacaOcupadaException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Date;
@@ -17,7 +18,7 @@ public class Funcion implements Serializable {
     private CopiaPelicula copia;
     private List<Entrada> entradasVendidas;
 
-    private Map<Butaca, Boolean> mapButacasFuncion;
+    private Map<Butaca, Boolean> mapaButacasFuncion;
 
     public Funcion(int idFuncion, Date fecha, String horario, Sala sala, CopiaPelicula copia) {
         this.idFuncion = idFuncion;
@@ -26,7 +27,7 @@ public class Funcion implements Serializable {
         this.sala = sala;
         this.copia = copia;
         this.entradasVendidas = new ArrayList<>();
-        this.mapButacasFuncion = new HashMap<>();
+        this.mapaButacasFuncion = new HashMap<>();
         inicializarMapaButacas();
     }
 
